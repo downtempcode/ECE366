@@ -4,7 +4,7 @@ Fibonacci(n)
 
 Team members: Sierra Bowler, Ailene Rodriguez, Kevin Cervera
 NET IDs: sbowl, arodr310, kcerve3
-Contribution: Sierra drafted the .asm code using the lecture slides from class and using the MARS help manual.
+Contribution: Sierra drafted the .asm code using the lecture slides from class and using the MARS help manual. Ailene worked on the code for the loop. Kevin worked on the special case and helped with the main function.
 
 GitHub link: [https://github.com/downtempcode/ECE366](https://github.com/downtempcode/ECE366/blob/main/fib.asm)
 
