@@ -12,6 +12,32 @@ main:
 	# Load n
 	lw   $a0, n       	# $a0 = n
 	
+main:
+    	lw   $a0, n          	# $a0 = n
+   	jal  Fibonacci       	# Call Fibonacci(n), result in $v0
+
+    	move $a0, $v0        	# Move Fibonacci(n) into $a0
+    	jal  Odd             	# Call Odd($a0), result in $v0
+
+    	sw   $v0, result     	# Store result (1 or 0) into memory
+    	li   $v0, 10         	# Exit program
+    	syscall
+
+
+# =======================
+# Fibonacci(n)
+# Input: $a0 = n
+# Output: $v0 = Fibonacci(n)
+# (Your original code preserved)
+# =======================
+# Fibonacci(n)
+# Input: $a0 = n
+# Output: $v0 = Fibonacci(n)
+
+# =======================
+# MAIN: Initialize n
+# =======================
+Fibonacci:
 	# Define constant = 1
 	addi $t5, $zero, 1	# $t5 = 1	 (constant 1)
 	
