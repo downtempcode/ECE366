@@ -32,7 +32,7 @@ main:
 #--------------------------------------------------
 # Function: fibonacci
 # Computes the nth Fibonacci number iteratively.
-# Pseudo-code reference: Figure 1 in project PDF :contentReference[oaicite:3]{index=3}
+# Pseudo-code reference: Figure 1 in project PDF 
 # Parameter: n is in $a0. Returns Fibonacci(n) in $v0.
 #--------------------------------------------------
 fibonacci:
@@ -64,7 +64,7 @@ fib_return_direct:
 # Function: isOdd
 # Determines if a number m is odd by calculating m % 2
 # using repeated subtraction.
-# Pseudo-code reference: Figures 2 and 3 in project PDF :contentReference[oaicite:4]{index=4}
+# Pseudo-code reference: Figures 2 and 3 in project PDF 
 # Parameter: m in $a0. Returns 1 in $v0 if m is odd, 0 if even.
 #--------------------------------------------------
 isOdd:
