@@ -1,87 +1,54 @@
         .data
-n:      .word 8          # Input: change this value to test different n
-result: .word 0          # Location to store the odd/even result
+n:      .word 8           # Input value (change as desired)
+result: .word 0           # Output: 1 if Fibonacci(n) is odd, 0 if even
 
         .text
-        .globl main
-
-#--------------------------------------------------
-# Main Program: Compute if Fibonacci(n) is odd
-#--------------------------------------------------
+        # Main Program: Compute IsFibonacciOdd(n)
 main:
-        # Load the input value 'n'
-        lw      $a0, n           # $a0 <- n
+        # Load n from memory into register $t0
+        lw      $t0, n           # t0 <- n
 
-        # Call the Fibonacci function
-        jal     fibonacci        # Result returned in $v0
+        # --- Compute Fibonacci(n) iteratively ---
+        # If n <= 1, then Fibonacci(n) = n.
+        addi    $t1, $zero, 1    # t1 = 1 (constant 1)
+        sub     $t2, $t0, $t1    # t2 = n - 1
+        bltz    $t2, fib_return_direct   # if (n - 1) < 0, branch
+        beq     $t0, $t1, fib_return_direct   # if n == 1, branch
 
-        # Save the nth Fibonacci number in a temporary register
-        move    $t0, $v0         # $t0 now holds Fibonacci(n)
-
-        # Now check if Fibonacci(n) is odd: call the isOdd function
-        move    $a0, $t0         # Set up parameter: m = Fibonacci(n)
-        jal     isOdd            # isOdd returns 1 if odd, 0 if even in $v0
-
-        # Store the result back into memory at 'result'
-        sw      $v0, result
-
-        # Exit the program
-        li      $v0, 10
-        syscall
-
-#--------------------------------------------------
-# Function: fibonacci
-# Computes the nth Fibonacci number iteratively.
-# Pseudo-code reference: Figure 1 in project PDF 
-# Parameter: n is in $a0. Returns Fibonacci(n) in $v0.
-#--------------------------------------------------
-fibonacci:
-        # If n <= 1, return n
-        ble     $a0, 1, fib_return_direct
-
-        # Initialize registers:
-        li      $t1, 0           # a = 0
-        li      $t2, 1           # b = 1
-        addi    $t3, $a0, -1     # t3 = n - 1 (iteration counter)
-
+        # Otherwise, initialize registers for iterative Fibonacci:
+        addi    $t3, $zero, 0    # t3 = 0 ; will serve as "a"
+        addi    $t4, $zero, 1    # t4 = 1 ; will serve as "b"
+        sub     $t5, $t0, $t1    # t5 = n - 1 ; loop counter
 fib_loop:
-        beq     $t3, $zero, fib_done  # If counter == 0, loop finished
-        move    $t4, $t2         # temp = b
-        add     $t2, $t1, $t2    # b = a + b
-        move    $t1, $t4         # a = temp
-        addi    $t3, $t3, -1     # decrement counter
+        beq     $t5, $zero, fib_done   # if loop counter == 0, done
+        add     $t6, $t3, $t4    # t6 = a + b (temporary sum)
+        add     $t3, $zero, $t4   # a = b  (simulate move: t3 = t4)
+        add     $t4, $zero, $t6   # b = temp (simulate move: t4 = t6)
+        addi    $t5, $t5, -1     # decrement loop counter
         j       fib_loop
-
 fib_done:
-        move    $v0, $t2         # Return Fibonacci number in $v0
-        jr      $ra
-
+        add     $t7, $zero, $t4   # t7 holds the Fibonacci result
+        j       odd_calc
 fib_return_direct:
-        move    $v0, $a0         # Return n (if n is 0 or 1)
-        jr      $ra
+        add     $t7, $zero, $t0   # Fibonacci result = n (special case)
 
-#--------------------------------------------------
-# Function: isOdd
-# Determines if a number m is odd by calculating m % 2
-# using repeated subtraction.
-# Pseudo-code reference: Figures 2 and 3 in project PDF 
-# Parameter: m in $a0. Returns 1 in $v0 if m is odd, 0 if even.
-#--------------------------------------------------
-isOdd:
-        # Copy m into $t5 for manipulation (computing m % 2)
-        move    $t5, $a0
-        li      $t6, 2           # Divisor: constant 2
-
+        # --- Determine if Fibonacci(n) is odd ---
+odd_calc:
+        addi    $t8, $zero, 2     # t8 = 2 (divisor for modulo)
+        add     $t9, $zero, $t7   # t9 = Fibonacci result (copy for modulo calculation)
 odd_loop:
-        blt     $t5, $t6, odd_check   # If m < 2, remainder found
-        sub     $t5, $t5, $t6         # m = m - 2
+        blt     $t9, $t8, odd_check   # if t9 < 2, then remainder is found
+        sub     $t9, $t9, $t8    # t9 = t9 - 2
         j       odd_loop
-
 odd_check:
-        beq     $t5, $zero, even      # if remainder == 0, number is even
-        li      $v0, 1                # Non-zero remainder: odd, return 1
-        jr      $ra
-
+        beq     $t9, $zero, even     # if remainder == 0, then even
+        addi    $t0, $zero, 1    # result = 1 (Fibonacci(n) is odd)
+        j       store_result
 even:
-        li      $v0, 0                # Even, return 0
-        jr      $ra
+        addi    $t0, $zero, 0    # result = 0 (Fibonacci(n) is even)
+store_result:
+        sw      $t0, result     # Store the result in memory
+
+        # Terminate program by looping indefinitely.
+end_loop:
+        j       end_loop
